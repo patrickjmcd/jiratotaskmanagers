@@ -29,14 +29,19 @@ function run(input, params) {
 	if (VERBOSE) { console.log("Completed stati:"+completed_stati) }
   var app_params     = report_json['task_app_params']
 	var target_project = app_params['project_name']
+	var target_area		 = app_params['project_name']
   var tag_names      = app_params['tags']
 
 	var TaskApp = Application("Things3")
 	TaskApp.includeStandardAdditions = true
-	if (VERBOSE) { 	console.log("Setting target project: "+target_project) }
-	var things_project = TaskApp.projects.byName(target_project)
-	things_project.name() // To force an exception that we can see.
-	if (VERBOSE) { console.log("Setting target project: "+things_project.name()) }
+	// if (VERBOSE) { 	console.log("Setting target project: "+target_project) }
+	// var things_project = TaskApp.projects.byName(target_project)
+	// things_project.name() // To force an exception that we can see.
+	// if (VERBOSE) { console.log("Setting target project: "+things_project.name()) }
+	if (VERBOSE) { 	console.log("Setting target area: "+target_area) }
+	var things_area = TaskApp.areas.byName(target_area)
+	things_area.name() // To force an exception that we can see.
+	if (VERBOSE) { console.log("Setting target project: "+things_area.name()) }
 
 	var things_tasks = TaskApp.toDos
 
@@ -45,6 +50,7 @@ function run(input, params) {
 		var task_name = row['task_name']
 		var task_notes = row['task_notes']
 		var task_status     = row['status']
+		var resolution = row['resolution']
 		var task_flags = row['task_flags']
 		if (VERBOSE) { console.log("Task: "+task_name) }
 		var things_task = things_tasks.byName(task_name)
@@ -52,7 +58,8 @@ function run(input, params) {
 			var things_name = things_task.name()
 			if (VERBOSE) { console.log("Found task: and it's " + things_task.status() + ". Setting status to " + task_status) }
       things_task.tagNames = tag_names
-			if (completed_stati.indexOf(task_status) > 0) {
+			// if (completed_stati.indexOf(task_status) > 0) {
+			if (resolution) {
 				if (VERBOSE) { console.log("Marking Done") }
                 things_task.status = 'completed'
 			}
@@ -61,7 +68,7 @@ function run(input, params) {
 			var toDo = TaskApp.ToDo({
         name: task_name,
         notes: task_notes,
-        project: things_project,
+        area: things_area,
         tagNames: tag_names,
         status: ( completed_stati.indexOf(task_status) > 0 ? 'completed' : 'open' )
       })
